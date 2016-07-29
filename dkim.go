@@ -303,7 +303,7 @@ func (d *Dkim) Eom(testKey *bool) Status {
 }
 
 // Chunk processes a chunk of message data.
-// Can include header and body data.
+// Can include header and body data.  ChunkFinished must be called afterwards.
 func (d *Dkim) Chunk(data []byte) Status {
 	var stat C.DKIM_STAT
 	stat = (C.dkim_chunk(d.dkim, (*C.u_char)(unsafe.Pointer(&data[0])), C.size_t(len(data))))
@@ -311,6 +311,12 @@ func (d *Dkim) Chunk(data []byte) Status {
 		fmt.Errorf("error processing chunk (%s)", getErr(stat))
 	}
 	return Status(stat)
+}
+
+// ChunkFinished is called to signal that we have finished
+// providing chunks.
+func (d *Dkim) ChunkFinished() Status {
+	return Status(C.dkim_chunk(d.dkim, nil, C.size_t(0)))
 }
 
 // GetSigHdr computes the signature header for a message.
