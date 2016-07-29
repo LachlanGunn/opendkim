@@ -304,17 +304,14 @@ func (d *Dkim) Eom(testKey *bool) Status {
 
 // Chunk processes a chunk of message data.
 // Can include header and body data.
-//
-// TODO: disabled until I figure out what's fould here
-//
-// func (d *Dkim) Chunk(data []byte) error {
-// 	var stat C.DKIM_STAT
-// 	stat = C.dkim_chunk(d.dkim, (*C.u_char)(unsafe.Pointer(&data[0])), C.size_t(len(data)))
-// 	if stat != StatusOK {
-// 		return fmt.Errorf("error processing chunk (%s)", getErr(stat))
-// 	}
-// 	return nil
-// }
+func (d *Dkim) Chunk(data []byte) error {
+	var stat C.DKIM_STAT
+	stat = C.dkim_chunk(d.dkim, (*C.u_char)(unsafe.Pointer(&data[0])), C.size_t(len(data)))
+	if stat != StatusOK {
+		return fmt.Errorf("error processing chunk (%s)", getErr(stat))
+	}
+	return nil
+}
 
 // GetSigHdr computes the signature header for a message.
 func (d *Dkim) GetSigHdr() (string, Status) {
